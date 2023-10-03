@@ -1,16 +1,16 @@
 # ip2tg
 
 This piece of code is complemented by 'ip2mqtt' which checks your IP address from an online portal
-i.e. https://api.ipify.org?format=json
-Format:
-{"ip":"new_ip_address"}
+i.e. https://api.ipify.org?format=json<BR>
+Format:<BR>
+{"ip":"new_ip_address"}<BR>
 and pushes it to a MQTT bus.
 
 On first run, ip2tg sets a default IP address to 127.0.0.1 and subscribes to a MQTT topic where it
-waits for an update.
+waits for an update.<BR>
 Once it has an updated IP, it sends it to a Telegram recepient (user or channel) and as well as 
 updates it in your Dynu DNS so you don't ever have to do it manually. Your Telegraam will get a status update for this
-too in form of "200 OK" (if successful) or whatever HTTP error is returned
+too in form of "200 OK" (if successful) or whatever HTTP error is returned<BR>
 
 So the obvious pre-reqs are:
 <UL>
@@ -21,8 +21,8 @@ So the obvious pre-reqs are:
 <LI>Dynu account and API key</LI>
 </UL>
 
-All config items come in as environment variables so you can deploy to physical, virtual, K8s windows, linux, whatever...
-Some of them need to be changed, others are up to you!
+All config items come in as environment variables so you can deploy to physical, virtual, K8s windows, linux, whatever...<BR>
+Some of them need to be changed, others are up to you!<BR>
 Here they are:
 
 MYIP2TG_APIKEY="<Your Telegram API Key>"<BR>
