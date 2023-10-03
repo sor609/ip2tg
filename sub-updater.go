@@ -86,6 +86,7 @@ func updateIP(newIP string) {
 	}
 
 	req.Header.Set("Content-Type", "application/json")
+	req.Header.Set("API-Key", DDNSKey)
 
 	resp, err := http.DefaultClient.Do(req)
 	if err != nil {
