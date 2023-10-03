@@ -4,8 +4,11 @@ package main
 // to Telegram
 
 import (
+	"bytes"
+	"encoding/json"
 	"fmt"
 	"log"
+	"net/http"
 	"os"
 	"os/signal"
 	"syscall"
@@ -55,10 +58,51 @@ func updateIP(newIP string) {
 
 	log.Printf("%s - Authorized on account '%s'", curtime, bot.Self.UserName)
 
-	//Send new IP to Telegram and MQTT
+	//Send new IP to Telegram
 	botmsg := tgbotapi.NewMessage(int64(Tgtarget), "New home IP detected: "+newIP)
 	bot.Send(botmsg)
 	fmt.Printf("%s - Sent to Telegram\n", curtime)
+
+	//Update Dynu DNS record
+
+	type apiData struct {
+		Name   string `json:"name"`
+		Group  string `json:"group"`
+		Ip     string `json:"ipv4Address"`
+		Ip4    bool   `json:"ipv4"`
+		Ip4wca bool   `json:"ipv4WildcardAlias"`
+	}
+
+	dynuData := apiData{DomName, DomGrp, newIP, true, true}
+
+	dynuJson, err := json.Marshal(dynuData)
+	if err != nil {
+		log.Fatalf("Error %v - Error marshaling JSON", err)
+	}
+
+	req, err := http.NewRequest(http.MethodPost, ApiSite, bytes.NewBuffer(dynuJson))
+	if err != nil {
+		log.Fatalf("Error %v - IP API connection failed", err)
+	}
+
+	req.Header.Set("Content-Type", "application/json")
+
+	resp, err := http.DefaultClient.Do(req)
+	if err != nil {
+		log.Fatalf("Error %v - IP API JSON post", err)
+	}
+
+	defer resp.Body.Close()
+
+	fmt.Printf("%s - API POST response status: %s", curtime, resp.Status)
+
+	botmsg = tgbotapi.NewMessage(int64(Tgtarget), "Updating Dynu status: "+resp.Status)
+	bot.Send(botmsg)
+
+	// responseData, err := io.ReadAll(resp.Body)
+	// if err != nil {
+	//	log.Fatalf("Error %v - Error reading IP API HTTP body", err)
+	//}
 }
 
 func main() {
