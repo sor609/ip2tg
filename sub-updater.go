@@ -80,7 +80,7 @@ func updateIP(newIP string) {
 		log.Fatalf("Error %v - Error marshaling JSON", err)
 	}
 
-	req, err := http.NewRequest(http.MethodPost, ApiSite, bytes.NewBuffer(dynuJson))
+	req, err := http.NewRequest(http.MethodPost, DDNSAPI, bytes.NewBuffer(dynuJson))
 	if err != nil {
 		log.Fatalf("Error %v - IP API connection failed", err)
 	}
