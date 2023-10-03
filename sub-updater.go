@@ -65,21 +65,15 @@ func updateIP(newIP string) {
 
 	//Update Dynu DNS record
 
-	type apiData struct {
-		Name   string `json:"name"`
-		Group  string `json:"group"`
-		Ip     string `json:"ipv4Address"`
-		Ip6    string `json:"ipv6Address"`
-		Ttl    int    `json:"ttl"`
-		Ip4b   bool   `json:"ipv4"`
-		Ip6b   bool   `json:"ipv6"`
-		Ip4wca bool   `json:"ipv4WildcardAlias"`
-		Ip6wca bool   `json:"ipv6WildcardAlias"`
-		Azt    bool   `json:"allowZomeTransfer"`
-		Dnssec bool   `json:"dnssec"`
+	type ApiData struct {
+		Name  string `json:"name"`
+		Group string `json:"group"`
+		Ip    string `json:"ipv4Address"`
+		Ttl   int    `json:"ttl"`
+		Ip4b  bool   `json:"ipv4"`
 	}
 
-	dynuData := apiData{DomName, DomGrp, newIP, "", 90, true, true, true, true, false, false}
+	dynuData := ApiData{Name: DomName, Group: DomGrp, Ip: newIP, Ttl: 90, Ip4b: true}
 
 	dynuJson, err := json.Marshal(dynuData)
 	if err != nil {
@@ -90,26 +84,19 @@ func updateIP(newIP string) {
 	if err != nil {
 		log.Fatalf("Error %v - IP API connection failed", err)
 	}
-
-	req.Header.Set("Content-Type", "application/json")
 	req.Header.Set("API-Key", DDNSKey)
+	req.Header.Set("Content-Type", "application/json")
 
 	resp, err := http.DefaultClient.Do(req)
 	if err != nil {
 		log.Fatalf("Error %v - IP API JSON post", err)
 	}
-
 	defer resp.Body.Close()
 
 	fmt.Printf("%s - API POST response status: %s", curtime, resp.Status)
 
 	botmsg = tgbotapi.NewMessage(int64(Tgtarget), "Updating Dynu status: "+resp.Status)
 	bot.Send(botmsg)
-
-	// responseData, err := io.ReadAll(resp.Body)
-	// if err != nil {
-	//	log.Fatalf("Error %v - Error reading IP API HTTP body", err)
-	//}
 }
 
 func main() {
