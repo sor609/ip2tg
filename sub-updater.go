@@ -95,7 +95,7 @@ func updateIP(newIP string) {
 
 	fmt.Printf("%s - API POST response status: %s", curtime, resp.Status)
 
-	botmsg = tgbotapi.NewMessage(int64(Tgtarget), "Updating Dynu status: "+resp.Status)
+	botmsg = tgbotapi.NewMessage(int64(Tgtarget), fmt.Sprintf("Updating Dynu host '%s' status: %s", dynuData.Name, resp.Status))
 	bot.Send(botmsg)
 }
 
